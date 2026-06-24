@@ -9,12 +9,12 @@ app = FastAPI(title="DRDO HR Training Module")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "https://hr-training-module-1.onrender.com"],
+
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 def seed_db(db: Session):
     if db.query(models.User).count() > 0:
