@@ -1,4 +1,5 @@
-const BASE = '/api'
+
+const BASE = 'https://hr-training-module.onrender.com/api'
 
 async function req(url, opts = {}) {
   const res = await fetch(BASE + url, {
