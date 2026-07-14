@@ -1,4 +1,6 @@
-const BASE = '/api'
+const BASE = process.env.NODE_ENV === 'production' 
+  ? 'https://hr-training-module.onrender.com/api'
+  : '/api'
 
 async function req(url, opts = {}) {
   const res = await fetch(BASE + url, {
@@ -11,7 +13,7 @@ async function req(url, opts = {}) {
     throw new Error(err.detail || 'Request failed')
   }
   return res.json()
-}
+}x
 
 // Auth
 export const login = (body) => req('/login', { method: 'POST', body })
