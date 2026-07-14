@@ -1,7 +1,6 @@
-const BASE = process.env.NODE_ENV === 'production' 
+const BASE = import.meta.env.PROD 
   ? 'https://hr-training-module.onrender.com/api'
   : '/api'
-
 async function req(url, opts = {}) {
   const res = await fetch(BASE + url, {
     headers: { 'Content-Type': 'application/json', ...opts.headers },
