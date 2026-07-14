@@ -76,6 +76,7 @@ class InternOut(BaseModel):
     fee_details: Optional[str] = None
     hr_final_remarks: Optional[str] = None
     certificate_issued: bool = False
+    photo: Optional[str] = None
     created_at: Optional[datetime] = None
     mentor: Optional[MentorOut] = None
     suggested_mentor: Optional[MentorOut] = None

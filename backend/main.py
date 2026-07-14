@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form
+from fastapi.staticfiles import StaticFiles
+import shutil, os
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -10,7 +12,6 @@ app = FastAPI(title="DRDO HR Training Module")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:3000", "https://hr-training-module-1.onrender.com"],
-
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -19,13 +20,9 @@ app.add_middleware(
 def seed_db(db: Session):
     if db.query(models.User).count() > 0:
         return
-
-    # HR admin user
     hr_user = models.User(username="admin", password="drdo123", role="hr")
     db.add(hr_user)
     db.flush()
-
-    # Mentor users and profiles
     mentor_data = [
         ("Dr. Rajesh Kumar", "Electronics & Radar", "rajesh.kumar@drdo.gov.in"),
         ("Dr. Priya Sharma", "Computer Science", "priya.sharma@drdo.gov.in"),
@@ -33,20 +30,19 @@ def seed_db(db: Session):
         ("Dr. Sunita Verma", "Mechanical Engineering", "sunita.verma@drdo.gov.in"),
         ("Dr. Vikram Nair", "Defence Systems", "vikram.nair@drdo.gov.in"),
     ]
-
     for i, (name, dept, email) in enumerate(mentor_data, start=1):
         user = models.User(username=f"mentor{i}", password="mentor123", role="mentor")
         db.add(user)
         db.flush()
         mentor = models.Mentor(name=name, department=dept, email=email, user_id=user.id)
         db.add(mentor)
-
     db.commit()
 
 
 @app.on_event("startup")
 def startup():
     Base.metadata.create_all(bind=engine)
+    os.makedirs("uploads", exist_ok=True)
     db = next(get_db())
     seed_db(db)
 
@@ -104,15 +100,37 @@ def get_intern(intern_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/api/interns", response_model=schemas.InternOut)
-def create_intern(data: schemas.InternCreate, db: Session = Depends(get_db)):
+async def create_intern(
+    name: str = Form(...),
+    age: int = Form(...),
+    contact: str = Form(...),
+    address: str = Form(...),
+    qualification: str = Form(...),
+    department: str = Form(...),
+    duration: str = Form(...),
+    start_date: str = Form(...),
+    photo: UploadFile = File(None),
+    db: Session = Depends(get_db)
+):
     intern = models.Intern(
         intern_id=generate_intern_id(db),
-        **data.model_dump(),
-        status="new"
+        name=name, age=age, contact=contact,
+        address=address, qualification=qualification,
+        department=department, duration=duration,
+        start_date=start_date, status="new"
     )
     db.add(intern)
     db.commit()
     db.refresh(intern)
+    if photo and photo.filename:
+        ext = photo.filename.split(".")[-1]
+        filename = f"intern_{intern.id}.{ext}"
+        path = os.path.join("uploads", filename)
+        with open(path, "wb") as f:
+            shutil.copyfileobj(photo.file, f)
+        intern.photo = filename
+        db.commit()
+        db.refresh(intern)
     return intern
 
 
@@ -202,3 +220,6 @@ def get_mentor_stats(mentor_id: int, db: Session = Depends(get_db)):
            .count()
         for s in statuses
     }
+
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

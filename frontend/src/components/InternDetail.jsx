@@ -1,6 +1,16 @@
 export default function InternDetail({ intern }) {
   if (!intern) return null
   return (
+  <>
+    {intern.photo && (
+      <div style={{ textAlign: 'center', marginBottom: 16 }}>
+        <img
+          src={`http://localhost:8000/uploads/${intern.photo}`}
+          alt={intern.name}
+          style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--navy)' }}
+        />
+      </div>
+    )}
     <div className="detail-grid">
       <div className="detail-item">
         <label>Intern ID</label>
@@ -39,5 +49,6 @@ export default function InternDetail({ intern }) {
         <span>{intern.address}</span>
       </div>
     </div>
-  )
+  </>
+)
 }

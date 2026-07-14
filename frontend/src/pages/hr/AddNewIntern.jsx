@@ -10,6 +10,7 @@ export default function AddNewIntern() {
   const [form, setForm] = useState(EMPTY)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
+  const [photoFile, setPhotoFile] = useState(null)
   const [error, setError] = useState('')
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
@@ -27,9 +28,10 @@ export default function AddNewIntern() {
     if (err) { setError(err); return }
     setLoading(true); setError(''); setSuccess('')
     try {
-      const intern = await createIntern({ ...form, age: parseInt(form.age) })
-      setSuccess(`Intern added successfully! ID: ${intern.intern_id}`)
-      setForm(EMPTY)
+    const intern = await createIntern({ ...form, age: parseInt(form.age) }, photoFile)
+    setSuccess(`Intern added successfully! ID: ${intern.intern_id}`)
+    setForm(EMPTY)
+    setPhotoFile(null)
     } catch (e) {
       setError(e.message)
     } finally {
@@ -62,6 +64,14 @@ export default function AddNewIntern() {
             <label>Contact Number *</label>
             <input value={form.contact} onChange={set('contact')} placeholder="e.g. 9876543210" />
           </div>
+          <div className="form-group">
+          <label>Photo (optional)</label>
+          <input
+          type="file"
+          accept="image/*"
+            onChange={e => setPhotoFile(e.target.files[0])}
+          />
+        </div>
           <div className="form-group">
             <label>Educational Qualification *</label>
             <input value={form.qualification} onChange={set('qualification')} placeholder="e.g. B.Tech, IIT Delhi (3rd Year)" />

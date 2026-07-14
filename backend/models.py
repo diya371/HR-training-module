@@ -50,6 +50,7 @@ class Intern(Base):
     fee_details = Column(String, nullable=True)
     hr_final_remarks = Column(Text, nullable=True)
     certificate_issued = Column(Boolean, default=False)
+    photo = Column(String, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     mentor = relationship("Mentor", foreign_keys=[mentor_id], back_populates="interns")

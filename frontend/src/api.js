@@ -1,5 +1,4 @@
-
-const BASE = 'https://hr-training-module.onrender.com/api'
+const BASE = '/api'
 
 async function req(url, opts = {}) {
   const res = await fetch(BASE + url, {
@@ -22,7 +21,15 @@ export const getInterns = (status) =>
   req('/interns' + (status ? `?status=${status}` : ''))
 
 export const getIntern = (id) => req(`/interns/${id}`)
-export const createIntern = (body) => req('/interns', { method: 'POST', body })
+
+export const createIntern = async (data, photoFile) => {
+  const formData = new FormData()
+  Object.entries(data).forEach(([k, v]) => formData.append(k, v))
+  if (photoFile) formData.append('photo', photoFile)
+  const res = await fetch('/api/interns', { method: 'POST', body: formData })
+  if (!res.ok) throw new Error('Failed to create intern')
+  return res.json()
+}
 
 export const assignMentor = (id, mentor_id) =>
   req(`/interns/${id}/assign-mentor`, { method: 'PUT', body: { mentor_id } })
