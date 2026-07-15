@@ -5,7 +5,7 @@ export default function InternDetail({ intern }) {
     {intern.photo && (
       <div style={{ textAlign: 'center', marginBottom: 16 }}>
         <img
-          src={`http://localhost:8000/uploads/${intern.photo}`}
+          src={`https://hr-training-module.onrender.com/uploads/${intern.photo}`}
           alt={intern.name}
           style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--navy)' }}
         />
