@@ -1,4 +1,5 @@
 const BASE = 'https://hr-training-module.onrender.com/api'
+
 async function req(url, opts = {}) {
   const res = await fetch(BASE + url, {
     headers: { 'Content-Type': 'application/json', ...opts.headers },
@@ -10,7 +11,7 @@ async function req(url, opts = {}) {
     throw new Error(err.detail || 'Request failed')
   }
   return res.json()
-}x
+}
 
 // Auth
 export const login = (body) => req('/login', { method: 'POST', body })
@@ -25,7 +26,7 @@ export const createIntern = async (data, photoFile) => {
   const formData = new FormData()
   Object.entries(data).forEach(([k, v]) => formData.append(k, v))
   if (photoFile) formData.append('photo', photoFile)
-  const res = await fetch('/api/interns', { method: 'POST', body: formData })
+  const res = await fetch('https://hr-training-module.onrender.com/api/interns', { method: 'POST', body: formData })
   if (!res.ok) throw new Error('Failed to create intern')
   return res.json()
 }
