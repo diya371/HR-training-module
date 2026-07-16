@@ -20,6 +20,7 @@ export default function AddNewIntern() {
       if (!v.toString().trim()) return `Please fill in: ${k.replace('_', ' ')}`
     }
     if (isNaN(form.age) || form.age < 16 || form.age > 35) return 'Age must be between 16 and 35'
+    if (form.contact.length !== 10) return 'Contact number must be exactly 10 digits'
     return null
   }
 
@@ -54,7 +55,11 @@ export default function AddNewIntern() {
         <div className="form-grid">
           <div className="form-group">
             <label>Full Name *</label>
-            <input value={form.name} onChange={set('name')} placeholder="e.g. Riya Malhotra" />
+            <input 
+            value={form.name} 
+            onChange={e => setForm(f => ({ ...f, name: e.target.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase() }))}
+            placeholder="e.g. RIYA MALHOTRA" 
+            />
           </div>
           <div className="form-group">
             <label>Age *</label>
@@ -62,7 +67,12 @@ export default function AddNewIntern() {
           </div>
           <div className="form-group">
             <label>Contact Number *</label>
-            <input value={form.contact} onChange={set('contact')} placeholder="e.g. 9876543210" />
+            <input 
+            value={form.contact}
+            onChange={e => setForm(f => ({ ...f, contact: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
+            placeholder="e.g. 9876543210"
+            maxLength={10}
+            />
           </div>
           <div className="form-group">
           <label>Photo (optional)</label>
